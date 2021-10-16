@@ -8,13 +8,12 @@
 
 import UIKit
 
-class MasterViewController: UITableViewController, ImageDownloadDelegate {
+class MasterViewController: UITableViewController {
     
     @IBOutlet weak var sortingControl: UISegmentedControl!
     
-    var detailViewController: DetailViewController? = nil
-    var objects = [[String: Any]]()
-
+    private var detailViewController: DetailViewController? = nil
+    private var objects = [[String: Any]]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,30 +27,26 @@ class MasterViewController: UITableViewController, ImageDownloadDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         if let forecastUrl = URL(string: "https://protonmail.github.io/proton-mobile-test/api/forecast") {
             URLSession.shared.dataTask(with: forecastUrl, completionHandler: { (data, response, error) in
-                self.objects = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [[String: Any]]
-                self.tableView.reloadData()
+                DispatchQueue.main.async {
+                    guard let data = data,
+                            let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
+                        return
+                    }
+                    self.objects = objects
+                    self.tableView.reloadData()
+                }
             }).resume()
         }
     }
-    
-    func imageDownloadedForObject(object: [String : Any]) {
-        let i = objects.firstIndex { (comparedObject) -> Bool in
-            return (comparedObject["day"]! as! String) == (object["day"]! as! String)
-        }!
-        
-        objects[i] = object
-        
-        tableView.reloadData()
-    }
 
-    @objc func sortingControlAction(_ segmentedControl: UISegmentedControl) {
+    @objc private func sortingControlAction(_ segmentedControl: UISegmentedControl) {
         if segmentedControl.selectedSegmentIndex == 1 { // switching to sorted option
             objects.sort { (object1, object2) -> Bool in
                 return object1["high"]! as! Double > object2["high"]! as! Double
             }
-            
             var tempObjects = objects
             for i in 0..<objects.count {
                 if (objects[i]["chance_rain"]! as! Double) > 0.5 {
@@ -66,7 +61,6 @@ class MasterViewController: UITableViewController, ImageDownloadDelegate {
                 return (object1["day"]! as! String) < (object2["day"]! as! String)
             }
         }
-        
         tableView.reloadData()
     }
     
@@ -85,7 +79,7 @@ class MasterViewController: UITableViewController, ImageDownloadDelegate {
         }
     }
 
-    // MARK: - Table View
+    // MARK: - UITableViewDataSource
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -102,8 +96,16 @@ class MasterViewController: UITableViewController, ImageDownloadDelegate {
         if let imageDownloaded = object["image_downloaded"] as? Bool, imageDownloaded {
             cell.textLabel?.textColor = .gray
         }
-        
         return cell
     }
 }
 
+extension MasterViewController: ImageDownloadDelegate {
+    func imageDownloadedForObject(object: [String : Any]) {
+        let i = objects.firstIndex { (comparedObject) -> Bool in
+            return (comparedObject["day"]! as! String) == (object["day"]! as! String)
+        }!
+        objects[i] = object
+        tableView.reloadData()
+    }
+}

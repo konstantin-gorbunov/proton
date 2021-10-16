@@ -9,7 +9,6 @@
 import UIKit
 
 protocol ImageDownloadDelegate: AnyObject {
-    
     func imageDownloadedForObject(object: [String : Any])
 }
 
@@ -23,7 +22,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var chanceOfRainLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
     
-    var delegate: ImageDownloadDelegate?
+    weak var delegate: ImageDownloadDelegate?
+
     var object = [String : Any]()
     
     override func viewWillAppear(_ animated: Bool) {
@@ -32,7 +32,7 @@ class DetailViewController: UIViewController {
         configureView()
     }
     
-    func configureView() {
+    private func configureView() {
         forecastLabel.text = (object["description"]! as! String)
         sunriseLabel.text = "\(object["sunrise"]! as! Int) seconds"
         sunsetLabel.text = "\(object["sunset"]! as! Int) seconds"
@@ -52,4 +52,3 @@ class DetailViewController: UIViewController {
         }
     }
 }
-

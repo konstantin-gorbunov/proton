@@ -10,36 +10,34 @@ import UIKit
 
 class MasterViewController: UITableViewController {
     
-    @IBOutlet weak var sortingControl: UISegmentedControl!
+    private enum Constants {
+        static let url: URL? = URL(string: "https://protonmail.github.io/proton-mobile-test/api/forecast")
+    }
     
-    private var detailViewController: DetailViewController? = nil
+    @IBOutlet weak var sortingControl: UISegmentedControl?
+    
     private var objects = [[String: Any]]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if let split = splitViewController {
-            let controllers = split.viewControllers
-            detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
-    
-        sortingControl.addTarget(self, action: #selector(self.sortingControlAction(_:)), for: .valueChanged)
+        tableView.delegate = self
+        tableView.dataSource = self
+        sortingControl?.addTarget(self, action: #selector(sortingControlAction(_:)), for: .valueChanged)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let forecastUrl = URL(string: "https://protonmail.github.io/proton-mobile-test/api/forecast") {
-            URLSession.shared.dataTask(with: forecastUrl, completionHandler: { (data, response, error) in
-                DispatchQueue.main.async {
-                    guard let data = data,
-                            let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
-                        return
-                    }
-                    self.objects = objects
-                    self.tableView.reloadData()
+        guard let forecastUrl = Constants.url else { return }
+        URLSession.shared.dataTask(with: forecastUrl, completionHandler: { (data, response, error) in
+            DispatchQueue.main.async {
+                guard let data = data,
+                        let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
+                    return
                 }
-            }).resume()
-        }
+                self.objects = objects
+                self.tableView.reloadData()
+            }
+        }).resume()
     }
 
     @objc private func sortingControlAction(_ segmentedControl: UISegmentedControl) {
@@ -70,7 +68,7 @@ class MasterViewController: UITableViewController {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let object = objects[indexPath.row]
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.delegate = self
+                controller.downloadDelegate = self
                 controller.object = object
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
@@ -80,12 +78,9 @@ class MasterViewController: UITableViewController {
     }
 
     // MARK: - UITableViewDataSource
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        objects.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -101,7 +96,7 @@ class MasterViewController: UITableViewController {
 }
 
 extension MasterViewController: ImageDownloadDelegate {
-    func imageDownloadedForObject(object: [String : Any]) {
+    func imageDownloadedForObject(_ object: [String : Any]) {
         let i = objects.firstIndex { (comparedObject) -> Bool in
             return (comparedObject["day"]! as! String) == (object["day"]! as! String)
         }!

@@ -24,7 +24,11 @@ class DetailViewController: UIViewController {
     
     weak var downloadDelegate: ImageDownloadDelegate?
 
-    var object = [String : Any]()
+    var object: [String : Any]? = nil {
+        didSet {
+            configureView()
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -32,20 +36,38 @@ class DetailViewController: UIViewController {
     }
     
     private func configureView() {
-        forecastLabel?.text = (object["description"]! as! String)
-        sunriseLabel?.text = "\(object["sunrise"]! as! Int) seconds"
-        sunsetLabel?.text = "\(object["sunset"]! as! Int) seconds"
-        highLabel?.text = "\(object["high"]! as! Int)ºC"
-        lowLabel?.text = "\(object["low"]! as! Int)ºC"
-        chanceOfRainLabel?.text = "\(object["chance_rain"]! as! Double)%"
+        guard let object = object else {
+            resetView()
+            return
+        }
+        forecastLabel?.text = (object["description"] as? String)
+        sunriseLabel?.text = "\(String(describing: object["sunrise"] as? Int)) seconds"
+        sunsetLabel?.text = "\(String(describing: object["sunset"] as? Int)) seconds"
+        highLabel?.text = "\(String(describing: object["high"] as? Int))ºC"
+        lowLabel?.text = "\(String(describing: object["low"] as? Int))ºC"
+        chanceOfRainLabel?.text = "\(String(describing: object["chance_rain"] as? Double))%"
+    }
+    
+    private func resetView() {
+        forecastLabel?.text = nil
+        sunriseLabel?.text = nil
+        sunsetLabel?.text = nil
+        highLabel?.text = nil
+        lowLabel?.text = nil
+        chanceOfRainLabel?.text = nil
     }
     
     @IBAction func downloadImage(_ sender: Any) {
-        if let forecastUrl = URL(string: object["image"]! as! String) {
+        if let stringUrl = object?["image"] as? String,
+           let forecastUrl = URL(string: stringUrl) {
             let imageDownloadSession = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-            imageDownloadSession.dataTask(with: forecastUrl, completionHandler: { [weak self] (data, response, error) in
-                self?.imageView?.image = UIImage(data: data!)
-                self?.object["image_downloaded"] = true
+            imageDownloadSession.dataTask(with: forecastUrl, completionHandler: { [weak self] data, response, error in
+                if let data = data {
+                    self?.imageView?.image = UIImage(data: data)
+                } else {
+                    self?.imageView?.image = nil
+                }
+                self?.object?["image_downloaded"] = true
                 if let object = self?.object {
                     self?.downloadDelegate?.imageDownloadedForObject(object)
                 }

@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BF08AEF271C49D500EFB672 /* ForecastDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AEE271C49D400EFB672 /* ForecastDay.swift */; };
+		8BF08AF1271C4A1600EFB672 /* URLSession+Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AF0271C4A1600EFB672 /* URLSession+Forecast.swift */; };
+		8BF08AF6271C4B9800EFB672 /* DataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AF5271C4B9800EFB672 /* DataProvider.swift */; };
+		8BF08AF9271C4CF100EFB672 /* forecast.json in Resources */ = {isa = PBXBuildFile; fileRef = 8BF08AF8271C4CF100EFB672 /* forecast.json */; };
+		8BF08AFE271C4E9700EFB672 /* AppDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AFD271C4E9700EFB672 /* AppDependency.swift */; };
+		8BF08B00271C4ECF00EFB672 /* LiveForecastDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AFF271C4ECF00EFB672 /* LiveForecastDataProvider.swift */; };
+		8BF08B02271C4EF700EFB672 /* LocalForecastDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08B01271C4EF700EFB672 /* LocalForecastDataProvider.swift */; };
 		E1CAF082220CBDBE00144320 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF081220CBDBE00144320 /* AppDelegate.swift */; };
 		E1CAF084220CBDBE00144320 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF083220CBDBE00144320 /* MasterViewController.swift */; };
 		E1CAF086220CBDBE00144320 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF085220CBDBE00144320 /* DetailViewController.swift */; };
@@ -16,6 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8BF08AEE271C49D400EFB672 /* ForecastDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastDay.swift; sourceTree = "<group>"; };
+		8BF08AF0271C4A1600EFB672 /* URLSession+Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+Forecast.swift"; sourceTree = "<group>"; };
+		8BF08AF5271C4B9800EFB672 /* DataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProvider.swift; sourceTree = "<group>"; };
+		8BF08AF8271C4CF100EFB672 /* forecast.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = forecast.json; sourceTree = "<group>"; };
+		8BF08AFD271C4E9700EFB672 /* AppDependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependency.swift; sourceTree = "<group>"; };
+		8BF08AFF271C4ECF00EFB672 /* LiveForecastDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveForecastDataProvider.swift; sourceTree = "<group>"; };
+		8BF08B01271C4EF700EFB672 /* LocalForecastDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalForecastDataProvider.swift; sourceTree = "<group>"; };
 		E1CAF07E220CBDBE00144320 /* ProtonTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProtonTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1CAF081220CBDBE00144320 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E1CAF083220CBDBE00144320 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -37,6 +51,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8BF08AF2271C4B1300EFB672 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8BF08AF5271C4B9800EFB672 /* DataProvider.swift */,
+				8BF08AFF271C4ECF00EFB672 /* LiveForecastDataProvider.swift */,
+				8BF08B01271C4EF700EFB672 /* LocalForecastDataProvider.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8BF08AF3271C4B2400EFB672 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				8BF08AF0271C4A1600EFB672 /* URLSession+Forecast.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		8BF08AF4271C4B3D00EFB672 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8BF08AEE271C49D400EFB672 /* ForecastDay.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8BF08AF7271C4CE400EFB672 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8BF08AF8271C4CF100EFB672 /* forecast.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8BF08AFC271C4E8600EFB672 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				8BF08AFD271C4E9700EFB672 /* AppDependency.swift */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
 		E1CAF075220CBDBE00144320 = {
 			isa = PBXGroup;
 			children = (
@@ -56,6 +112,11 @@
 		E1CAF080220CBDBE00144320 /* ProtonTest */ = {
 			isa = PBXGroup;
 			children = (
+				8BF08AFC271C4E8600EFB672 /* Dependencies */,
+				8BF08AF7271C4CE400EFB672 /* Resources */,
+				8BF08AF4271C4B3D00EFB672 /* Models */,
+				8BF08AF3271C4B2400EFB672 /* Utils */,
+				8BF08AF2271C4B1300EFB672 /* Services */,
 				E1CAF081220CBDBE00144320 /* AppDelegate.swift */,
 				E1CAF083220CBDBE00144320 /* MasterViewController.swift */,
 				E1CAF085220CBDBE00144320 /* DetailViewController.swift */,
@@ -126,6 +187,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BF08AF9271C4CF100EFB672 /* forecast.json in Resources */,
 				E1CAF08E220CBDBF00144320 /* LaunchScreen.storyboard in Resources */,
 				E1CAF08B220CBDBF00144320 /* Assets.xcassets in Resources */,
 				E1CAF089220CBDBE00144320 /* Main.storyboard in Resources */,
@@ -139,9 +201,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BF08AF6271C4B9800EFB672 /* DataProvider.swift in Sources */,
+				8BF08AF1271C4A1600EFB672 /* URLSession+Forecast.swift in Sources */,
 				E1CAF086220CBDBE00144320 /* DetailViewController.swift in Sources */,
+				8BF08AEF271C49D500EFB672 /* ForecastDay.swift in Sources */,
 				E1CAF084220CBDBE00144320 /* MasterViewController.swift in Sources */,
+				8BF08B00271C4ECF00EFB672 /* LiveForecastDataProvider.swift in Sources */,
 				E1CAF082220CBDBE00144320 /* AppDelegate.swift in Sources */,
+				8BF08AFE271C4E9700EFB672 /* AppDependency.swift in Sources */,
+				8BF08B02271C4EF700EFB672 /* LocalForecastDataProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

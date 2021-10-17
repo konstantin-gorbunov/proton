@@ -10,55 +10,48 @@ import UIKit
 
 class MasterViewController: UITableViewController {
     
-    private enum Constants {
-        static let url: URL? = URL(string: "https://protonmail.github.io/proton-mobile-test/api/forecast")
-    }
-    
     @IBOutlet weak var sortingControl: UISegmentedControl?
+
     private lazy var dependency = AppDependency()
-    
-    private var forecast: [[String: Any]]?
+    private var forecast: Forecast?
+    private var rawForecast: Forecast? {
+        didSet {
+            rawForecast?.sort { object1, object2 -> Bool in
+                return (object1.day ?? "") < (object2.day ?? "")
+            }
+            forecast = rawForecast
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
         sortingControl?.addTarget(self, action: #selector(sortingControlAction(_:)), for: .valueChanged)
+        dependency.liveDataProvider.fetchForecastList { result in
+            DispatchQueue.main.async { [weak self] in
+                self?.processResults(result)
+            }
+        }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        guard let forecastUrl = Constants.url else { return }
-        URLSession.shared.dataTask(with: forecastUrl, completionHandler: { data, response, error in
-            DispatchQueue.main.async {
-                guard let data = data,
-                        let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
-                    return
-                }
-                self.forecast = objects
-                self.tableView.reloadData()
-            }
-        }).resume()
+    private func processResults(_ result: DataProvider.FetchForecastResult) {
+        guard case .success(let forecast) = result, forecast.isEmpty == false else {
+            // TODO: ask cached data
+            return
+        }
+        rawForecast = forecast
+        tableView.reloadData()
+        // TODO: update cached data
     }
 
     @objc private func sortingControlAction(_ segmentedControl: UISegmentedControl) {
         if segmentedControl.selectedSegmentIndex == 1 { // switching to sorted option
-            forecast?.sort { object1, object2 -> Bool in
-                return (object1["high"] as? Double ?? 0) > (object2["high"] as? Double ?? 0)
+            forecast = rawForecast?.filter { $0.chanceRain ?? 0 < 0.5 }.sorted { object1, object2 -> Bool in
+                return (object1.high ?? 0) > (object2.high ?? 0)
             }
-            var tempObjects = forecast
-            for i in 0..<(forecast?.count ?? 0) {
-                if (forecast?[i]["chance_rain"] as? Double ?? 0) > 0.5 {
-                    tempObjects?.removeAll { object -> Bool in
-                        return object["chance_rain"] as? Double == forecast?[i]["chance_rain"] as? Double
-                    }
-                }
-            }
-            forecast = tempObjects
         } else {
-            forecast?.sort { object1, object2 -> Bool in
-                return (object1["day"] as? String ?? "") < (object2["day"] as? String ?? "")
-            }
+            forecast = rawForecast
         }
         tableView.reloadData()
     }
@@ -76,7 +69,7 @@ class MasterViewController: UITableViewController {
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
                 let title: String?
-                if let day = object?["day"] as? String {
+                if let day = object?.day {
                     title = "Day \(day)"
                 } else {
                     title = nil
@@ -97,24 +90,27 @@ class MasterViewController: UITableViewController {
 
         let object = forecast?[indexPath.row]
         let text: String?
-        if let day = object?["day"], let description = object?["description"] {
+        if let day = object?.day, let description = object?.forecastDescription {
             text = "Day \(day): \(description)"
         } else {
             text = nil
         }
         cell.textLabel?.text = text
-        if let imageDownloaded = object?["image_downloaded"] as? Bool, imageDownloaded {
-            cell.textLabel?.textColor = .gray
-        }
+        // TODO: change color for Day with previously downloaded image
+//        if let imageDownloaded = object?["image_downloaded"] as? Bool, imageDownloaded {
+//            cell.textLabel?.textColor = .gray
+//        }
         return cell
     }
 }
 
 extension MasterViewController: ImageDownloadDelegate {
-    func imageDownloadedForObject(_ object: [String: Any]) {
+    func imageDownloadedForObject(_ object: ForecastDay?) {
+        guard let object = object else { return }
         if let i = forecast?.firstIndex(where: { comparedObject -> Bool in
-            return (comparedObject["day"] as? String) == (object["day"] as? String)
+            return comparedObject.day == object.day
         }) {
+            // TODO: save info about Day with previously downloaded image
             forecast?[i] = object
             tableView.reloadData()
         }

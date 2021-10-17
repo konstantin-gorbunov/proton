@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ImageDownloadDelegate: AnyObject {
-    func imageDownloadedForObject(_ object: [String : Any])
+    func imageDownloadedForObject(_ object: [String: Any])
 }
 
 class DetailViewController: UIViewController {
@@ -24,7 +24,7 @@ class DetailViewController: UIViewController {
     
     weak var downloadDelegate: ImageDownloadDelegate?
 
-    var object: [String : Any]? = nil {
+    var object: [String: Any]? = nil {
         didSet {
             configureView()
         }

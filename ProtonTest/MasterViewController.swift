@@ -28,7 +28,7 @@ class MasterViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let forecastUrl = Constants.url else { return }
-        URLSession.shared.dataTask(with: forecastUrl, completionHandler: { (data, response, error) in
+        URLSession.shared.dataTask(with: forecastUrl, completionHandler: { data, response, error in
             DispatchQueue.main.async {
                 guard let data = data,
                         let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
@@ -42,21 +42,21 @@ class MasterViewController: UITableViewController {
 
     @objc private func sortingControlAction(_ segmentedControl: UISegmentedControl) {
         if segmentedControl.selectedSegmentIndex == 1 { // switching to sorted option
-            objects.sort { (object1, object2) -> Bool in
-                return object1["high"]! as! Double > object2["high"]! as! Double
+            objects.sort { object1, object2 -> Bool in
+                return (object1["high"] as? Double ?? 0) > (object2["high"] as? Double ?? 0)
             }
             var tempObjects = objects
             for i in 0..<objects.count {
-                if (objects[i]["chance_rain"]! as! Double) > 0.5 {
-                    tempObjects.removeAll { (object) -> Bool in
-                        return object["chance_rain"]! as! Double == objects[i]["chance_rain"]! as! Double
+                if (objects[i]["chance_rain"] as? Double ?? 0) > 0.5 {
+                    tempObjects.removeAll { object -> Bool in
+                        return object["chance_rain"] as? Double == objects[i]["chance_rain"] as? Double
                     }
                 }
             }
             objects = tempObjects
         } else {
-            objects.sort { (object1, object2) -> Bool in
-                return (object1["day"]! as! String) < (object2["day"]! as! String)
+            objects.sort { object1, object2 -> Bool in
+                return (object1["day"] as? String ?? "") < (object2["day"] as? String ?? "")
             }
         }
         tableView.reloadData()
@@ -67,12 +67,20 @@ class MasterViewController: UITableViewController {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let object = objects[indexPath.row]
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+                guard let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
+                    return
+                }
                 controller.downloadDelegate = self
                 controller.object = object
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
-                controller.title = "Day \(object["day"]! as! String)"
+                let title: String?
+                if let day = object["day"] as? String {
+                    title = "Day \(day)"
+                } else {
+                    title = nil
+                }
+                controller.title = title
             }
         }
     }
@@ -87,7 +95,13 @@ class MasterViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
         let object = objects[indexPath.row]
-        cell.textLabel!.text = "Day \(object["day"]!): \(object["description"]!)"
+        let text: String?
+        if let day = object["day"], let description = object["description"] {
+            text = "Day \(day): \(description)"
+        } else {
+            text = nil
+        }
+        cell.textLabel?.text = text
         if let imageDownloaded = object["image_downloaded"] as? Bool, imageDownloaded {
             cell.textLabel?.textColor = .gray
         }
@@ -96,11 +110,12 @@ class MasterViewController: UITableViewController {
 }
 
 extension MasterViewController: ImageDownloadDelegate {
-    func imageDownloadedForObject(_ object: [String : Any]) {
-        let i = objects.firstIndex { (comparedObject) -> Bool in
-            return (comparedObject["day"]! as! String) == (object["day"]! as! String)
-        }!
-        objects[i] = object
-        tableView.reloadData()
+    func imageDownloadedForObject(_ object: [String: Any]) {
+        if let i = objects.firstIndex(where: { comparedObject -> Bool in
+            return (comparedObject["day"] as? String) == (object["day"] as? String)
+        }) {
+            objects[i] = object
+            tableView.reloadData()
+        }
     }
 }

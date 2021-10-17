@@ -15,8 +15,9 @@ class MasterViewController: UITableViewController {
     }
     
     @IBOutlet weak var sortingControl: UISegmentedControl?
+    private lazy var dependency = AppDependency()
     
-    private var objects = [[String: Any]]()
+    private var forecast: [[String: Any]]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +35,7 @@ class MasterViewController: UITableViewController {
                         let objects = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]] else {
                     return
                 }
-                self.objects = objects
+                self.forecast = objects
                 self.tableView.reloadData()
             }
         }).resume()
@@ -42,20 +43,20 @@ class MasterViewController: UITableViewController {
 
     @objc private func sortingControlAction(_ segmentedControl: UISegmentedControl) {
         if segmentedControl.selectedSegmentIndex == 1 { // switching to sorted option
-            objects.sort { object1, object2 -> Bool in
+            forecast?.sort { object1, object2 -> Bool in
                 return (object1["high"] as? Double ?? 0) > (object2["high"] as? Double ?? 0)
             }
-            var tempObjects = objects
-            for i in 0..<objects.count {
-                if (objects[i]["chance_rain"] as? Double ?? 0) > 0.5 {
-                    tempObjects.removeAll { object -> Bool in
-                        return object["chance_rain"] as? Double == objects[i]["chance_rain"] as? Double
+            var tempObjects = forecast
+            for i in 0..<(forecast?.count ?? 0) {
+                if (forecast?[i]["chance_rain"] as? Double ?? 0) > 0.5 {
+                    tempObjects?.removeAll { object -> Bool in
+                        return object["chance_rain"] as? Double == forecast?[i]["chance_rain"] as? Double
                     }
                 }
             }
-            objects = tempObjects
+            forecast = tempObjects
         } else {
-            objects.sort { object1, object2 -> Bool in
+            forecast?.sort { object1, object2 -> Bool in
                 return (object1["day"] as? String ?? "") < (object2["day"] as? String ?? "")
             }
         }
@@ -66,7 +67,7 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row]
+                let object = forecast?[indexPath.row]
                 guard let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
                     return
                 }
@@ -75,7 +76,7 @@ class MasterViewController: UITableViewController {
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
                 let title: String?
-                if let day = object["day"] as? String {
+                if let day = object?["day"] as? String {
                     title = "Day \(day)"
                 } else {
                     title = nil
@@ -88,21 +89,21 @@ class MasterViewController: UITableViewController {
     // MARK: - UITableViewDataSource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        objects.count
+        forecast?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row]
+        let object = forecast?[indexPath.row]
         let text: String?
-        if let day = object["day"], let description = object["description"] {
+        if let day = object?["day"], let description = object?["description"] {
             text = "Day \(day): \(description)"
         } else {
             text = nil
         }
         cell.textLabel?.text = text
-        if let imageDownloaded = object["image_downloaded"] as? Bool, imageDownloaded {
+        if let imageDownloaded = object?["image_downloaded"] as? Bool, imageDownloaded {
             cell.textLabel?.textColor = .gray
         }
         return cell
@@ -111,10 +112,10 @@ class MasterViewController: UITableViewController {
 
 extension MasterViewController: ImageDownloadDelegate {
     func imageDownloadedForObject(_ object: [String: Any]) {
-        if let i = objects.firstIndex(where: { comparedObject -> Bool in
+        if let i = forecast?.firstIndex(where: { comparedObject -> Bool in
             return (comparedObject["day"] as? String) == (object["day"] as? String)
         }) {
-            objects[i] = object
+            forecast?[i] = object
             tableView.reloadData()
         }
     }

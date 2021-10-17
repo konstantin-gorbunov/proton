@@ -120,9 +120,6 @@
                                 <rect key="frame" x="130" y="617" width="114" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Download Image"/>
-                                <connections>
-                                    <action selector="downloadImage:" destination="JEX-9P-axG" eventType="touchUpInside" id="WM8-hZ-8Ma"/>
-                                </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CI7-Fe-dgZ">
                                 <rect key="frame" x="16" y="240" width="343" height="206"/>
@@ -136,6 +133,7 @@
                     <navigationItem key="navigationItem" title="Detail" id="mOI-FS-AaM"/>
                     <connections>
                         <outlet property="chanceOfRainLabel" destination="B5z-o5-jV5" id="hdo-7d-84k"/>
+                        <outlet property="downloadButton" destination="DXu-9F-41j" id="oIC-Ye-Wm7"/>
                         <outlet property="forecastLabel" destination="tjH-w3-fH7" id="Dmw-6m-mWg"/>
                         <outlet property="highLabel" destination="nvZ-H8-7Fl" id="Zwd-NW-P07"/>
                         <outlet property="imageView" destination="CI7-Fe-dgZ" id="XmR-xP-IkX"/>

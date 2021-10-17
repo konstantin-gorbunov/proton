@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ImageDownloadDelegate: AnyObject {
-    func imageDownloadedForObject(_ object: [String: Any])
+    func imageDownloadedForObject(_ object: ForecastDay?)
 }
 
 class DetailViewController: UIViewController {
@@ -21,57 +21,46 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var lowLabel: UILabel?
     @IBOutlet weak var chanceOfRainLabel: UILabel?
     @IBOutlet weak var imageView: UIImageView?
+    @IBOutlet weak var downloadButton: UIButton?
     
     weak var downloadDelegate: ImageDownloadDelegate?
 
-    var object: [String: Any]? = nil {
+    var object: ForecastDay? = nil {
         didSet {
             configureView()
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        downloadButton?.addTarget(self, action: #selector(downloadImageClicked), for: .touchUpInside)
+    }
+    
+    @objc private func downloadImageClicked() {
+        if let stringUrl = object?.image, let forecastUrl = URL(string: stringUrl) {
+            let imageDownloadSession = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
+            imageDownloadSession.dataTask(with: forecastUrl, completionHandler: { [weak self] data, response, error in
+                self?.processResults(data)
+            }).resume()
+        }
+    }
+    
+    private func processResults(_ data: Data?) {
+        if let data = data {
+            imageView?.image = UIImage(data: data)
+            downloadButton?.isHidden = true
+        } else {
+            imageView?.image = nil
+        }
+        downloadDelegate?.imageDownloadedForObject(object)
     }
     
     private func configureView() {
-        guard let object = object else {
-            resetView()
-            return
-        }
-        forecastLabel?.text = (object["description"] as? String)
-        sunriseLabel?.text = "\(String(describing: object["sunrise"] as? Int)) seconds"
-        sunsetLabel?.text = "\(String(describing: object["sunset"] as? Int)) seconds"
-        highLabel?.text = "\(String(describing: object["high"] as? Int))ºC"
-        lowLabel?.text = "\(String(describing: object["low"] as? Int))ºC"
-        chanceOfRainLabel?.text = "\(String(describing: object["chance_rain"] as? Double))%"
-    }
-    
-    private func resetView() {
-        forecastLabel?.text = nil
-        sunriseLabel?.text = nil
-        sunsetLabel?.text = nil
-        highLabel?.text = nil
-        lowLabel?.text = nil
-        chanceOfRainLabel?.text = nil
-    }
-    
-    @IBAction func downloadImage(_ sender: Any) {
-        if let stringUrl = object?["image"] as? String,
-           let forecastUrl = URL(string: stringUrl) {
-            let imageDownloadSession = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-            imageDownloadSession.dataTask(with: forecastUrl, completionHandler: { [weak self] data, response, error in
-                if let data = data {
-                    self?.imageView?.image = UIImage(data: data)
-                } else {
-                    self?.imageView?.image = nil
-                }
-                self?.object?["image_downloaded"] = true
-                if let object = self?.object {
-                    self?.downloadDelegate?.imageDownloadedForObject(object)
-                }
-            }).resume()
-        }
+        forecastLabel?.text = object?.forecastDescription
+        sunriseLabel?.text = "\(String(describing: object?.sunrise)) seconds"
+        sunsetLabel?.text = "\(String(describing: object?.sunset)) seconds"
+        highLabel?.text = "\(String(describing: object?.high))ºC"
+        lowLabel?.text = "\(String(describing: object?.low))ºC"
+        chanceOfRainLabel?.text = "\(String(describing: object?.chanceRain))%"
     }
 }

@@ -1,0 +1,8 @@
+What should be done:
+- save last data locally (replace included in project forecast.json which will be used by LocalForecastDataProvider)
+- use a LocalForecastDataProvider in case if LiveForecastDataProvider returns .failure
+- unit test for all current models calculated variables;
+- remove Seques and use in code transition;
+- create AppCoordinator which should manage all necessary transactions;
+- automation UI test;
+- add swift-lint call to prebuild step with special rules;

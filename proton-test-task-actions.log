@@ -1,0 +1,54 @@
+First impression: 
+better to re-write everything from scratch
+
+But after read task: estimation: ~12 hours, not acceptable
+
+0. review project file and target property
+1. App migrated to swift 5
+2. xCode warning fixed (autolayout warning postponed)
+3. Read one more time description of task
+4. test with iPhone simualtor:
+--- not correct behavior with represantion of Day with downloaded image 
+>>If the image for a particular day is downloaded (initiated by the user in the detail screen), then the row in the master view should distinguish this visually by changing the row's color
+--- layout problems (video attached)
+
+5. test with iPad simulator:
+- crash on start
+
+
+Application is using UISplitViewController.
+So, I expected that iPad should be supported.
+
+
+6. add DispatchQueue.main.async for URLSession.shared result, remove force unwrap in changed lines
+
+7. separate method by implemented protocols in MasterViewController
+8. add private modificator for methods and variables
+9. add super.viewDidAppear(animated)
+10. set weak for var delegate in DetailViewController
+
+
+11. fix launch on iPad, use optional in DetailViewController, reset view element in case if object is nil
+
+12. review AppDelegate, optimization, remove force unwrapping, test on iPad simulator
+
+13. remove force unwrapp from MasterViewController, test on simualtor
+
+14.
+- add ForecastDay struct to represent JSON data;
+- add URLSession extension to transform JSON to object;
+- add AppDependency;
+- add DataProvider with live and local implementation.
+15.
+- prepare to replace objects = [[String: Any]]() with forecast: Forecast?
+
+- add array extension with safeIndex
+
+- var cellDescription and var title moved to ForecastDay model;
+- ImageDownloadDelegate sent an image data;
+- thumbnail in UITableViewCell;
+- use ForecastCellViewModel
+
+- avoid to use a `tableView.indexPathForSelectedRow` in `prepare(for segue: UIStoryboardSegue`
+- keep image data after switch segment;
+- ForecastCellViewModel from struct --> class

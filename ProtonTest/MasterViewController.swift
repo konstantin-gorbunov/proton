@@ -8,11 +8,6 @@
 
 import UIKit
 
-struct ForecastCellViewModel {
-    let forecast: ForecastDay
-    var imageData: Data?
-}
-
 class MasterViewController: UITableViewController {
     
     private enum Constants {
@@ -95,7 +90,7 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath)
         let object = forecastModel[safeIndex: indexPath.row]
-        cell.textLabel?.text = object?.forecast.cellDescription
+        cell.textLabel?.text = object?.cellDescription
         cell.textLabel?.textColor = object?.imageData != nil ? .gray : .black
         if let data = object?.imageData {
             cell.imageView?.image = UIImage(data: data)

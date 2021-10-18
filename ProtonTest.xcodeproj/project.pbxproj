@@ -15,6 +15,7 @@
 		8BF08B00271C4ECF00EFB672 /* LiveForecastDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08AFF271C4ECF00EFB672 /* LiveForecastDataProvider.swift */; };
 		8BF08B02271C4EF700EFB672 /* LocalForecastDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08B01271C4EF700EFB672 /* LocalForecastDataProvider.swift */; };
 		8BF08B04271D560600EFB672 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08B03271D560600EFB672 /* ArrayExtension.swift */; };
+		8BF08B06271D654E00EFB672 /* ForecastCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF08B05271D654E00EFB672 /* ForecastCellViewModel.swift */; };
 		E1CAF082220CBDBE00144320 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF081220CBDBE00144320 /* AppDelegate.swift */; };
 		E1CAF084220CBDBE00144320 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF083220CBDBE00144320 /* MasterViewController.swift */; };
 		E1CAF086220CBDBE00144320 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CAF085220CBDBE00144320 /* DetailViewController.swift */; };
@@ -32,6 +33,7 @@
 		8BF08AFF271C4ECF00EFB672 /* LiveForecastDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveForecastDataProvider.swift; sourceTree = "<group>"; };
 		8BF08B01271C4EF700EFB672 /* LocalForecastDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalForecastDataProvider.swift; sourceTree = "<group>"; };
 		8BF08B03271D560600EFB672 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
+		8BF08B05271D654E00EFB672 /* ForecastCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastCellViewModel.swift; sourceTree = "<group>"; };
 		E1CAF07E220CBDBE00144320 /* ProtonTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProtonTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1CAF081220CBDBE00144320 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E1CAF083220CBDBE00144320 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				8BF08AEE271C49D400EFB672 /* ForecastDay.swift */,
+				8BF08B05271D654E00EFB672 /* ForecastCellViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -204,6 +207,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BF08B06271D654E00EFB672 /* ForecastCellViewModel.swift in Sources */,
 				8BF08AF6271C4B9800EFB672 /* DataProvider.swift in Sources */,
 				8BF08AF1271C4A1600EFB672 /* URLSession+Forecast.swift in Sources */,
 				E1CAF086220CBDBE00144320 /* DetailViewController.swift in Sources */,

@@ -17,12 +17,6 @@ struct ForecastDay: Codable {
     let chanceRain: Double?
     let high, low: Int?
     let image: String?
-    var cellDescription: String? {
-        if let day = day, let description = forecastDescription {
-            return "Day \(day): \(description)"
-        }
-        return nil
-    }
     var title: String? {
         if let day = day {
             return "Day \(day)"

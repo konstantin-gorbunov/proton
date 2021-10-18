@@ -34,6 +34,7 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         downloadButton?.addTarget(self, action: #selector(downloadImageClicked), for: .touchUpInside)
+        configureView()
     }
     
     @objc private func downloadImageClicked() {

@@ -19,6 +19,7 @@ class MasterViewController: UITableViewController {
     private lazy var dependency = AppDependency()
 
     private var forecastModel: [ForecastCellViewModel] = []
+    private var selectedForecastModel: ForecastCellViewModel?
     private var rawForecast: Forecast? {
         didSet {
             rawForecast?.sort { object1, object2 -> Bool in
@@ -69,16 +70,15 @@ class MasterViewController: UITableViewController {
     // MARK: - Segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = tableView.indexPathForSelectedRow {
-                guard let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
-                    return
-                }
-                controller.downloadDelegate = self
-                controller.forecastDay = forecastModel[safeIndex: indexPath.row]?.forecast
-                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
-                controller.title = forecastModel[safeIndex: indexPath.row]?.viewControllerTitle
+            guard let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
+                return
             }
+            controller.downloadDelegate = self
+            controller.forecastDay = selectedForecastModel?.forecast
+            controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            controller.title = selectedForecastModel?.viewControllerTitle
+            selectedForecastModel = nil
         }
     }
 
@@ -99,6 +99,17 @@ class MasterViewController: UITableViewController {
             cell.imageView?.image = nil
         }
         return cell
+    }
+    
+    // MARK: - UITableViewDelegate
+    
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        selectedForecastModel = forecastModel[safeIndex: indexPath.row]
+        return indexPath
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

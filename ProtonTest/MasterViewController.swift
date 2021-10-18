@@ -30,7 +30,11 @@ class MasterViewController: UITableViewController {
     }
     private var forecast: Forecast? {
         didSet {
-            forecastModel = forecast?.map { ForecastCellViewModel(forecast: $0, imageData: nil) } ?? []
+            let tmp = forecast?.map { ForecastCellViewModel(forecast: $0, imageData: nil) } ?? []
+            tmp.forEach { model in
+                model.imageData = forecastModel.first(where: { $0.forecast == model.forecast })?.imageData
+            }
+            forecastModel = tmp
         }
     }
 
@@ -116,11 +120,7 @@ class MasterViewController: UITableViewController {
 extension MasterViewController: ImageDownloadDelegate {
     func imageDownloadedForObject(_ object: ForecastDay?, _ data: Data?) {
         guard let forecastDay = object else { return }
-        if let indexOfModel = forecastModel.firstIndex(where: { $0.forecast == forecastDay }) {
-            if indexOfModel < forecastModel.count {
-                forecastModel[indexOfModel].imageData = data
-                tableView.reloadData()
-            }
-        }
+        forecastModel.first(where: { $0.forecast == forecastDay })?.imageData = data
+        tableView.reloadData()
     }
 }

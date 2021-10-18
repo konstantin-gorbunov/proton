@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ForecastCellViewModel {
+class ForecastCellViewModel {
     let forecast: ForecastDay
     var imageData: Data?
     var cellDescription: String? {
@@ -22,5 +22,10 @@ struct ForecastCellViewModel {
             return "Day \(day)"
         }
         return nil
+    }
+    
+    init(forecast: ForecastDay, imageData: Data?) {
+        self.forecast = forecast
+        self.imageData = imageData
     }
 }

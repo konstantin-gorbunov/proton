@@ -17,6 +17,18 @@ struct ForecastDay: Codable {
     let chanceRain: Double?
     let high, low: Int?
     let image: String?
+    var cellDescription: String? {
+        if let day = day, let description = forecastDescription {
+            return "Day \(day): \(description)"
+        }
+        return nil
+    }
+    var title: String? {
+        if let day = day {
+            return "Day \(day)"
+        }
+        return nil
+    }
 
     enum CodingKeys: String, CodingKey {
         case day
@@ -24,5 +36,11 @@ struct ForecastDay: Codable {
         case sunrise, sunset
         case chanceRain = "chance_rain"
         case high, low, image
+    }
+}
+
+extension ForecastDay: Equatable {
+    static func == (lhs: ForecastDay, rhs: ForecastDay) -> Bool {
+        return lhs.day == rhs.day
     }
 }

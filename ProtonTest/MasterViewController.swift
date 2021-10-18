@@ -8,18 +8,33 @@
 
 import UIKit
 
+struct ForecastCellViewModel {
+    let forecast: ForecastDay
+    var imageData: Data?
+}
+
 class MasterViewController: UITableViewController {
+    
+    private enum Constants {
+        static let cellIdentifier: String = "Cell"
+    }
     
     @IBOutlet weak var sortingControl: UISegmentedControl?
 
     private lazy var dependency = AppDependency()
-    private var forecast: Forecast?
+
+    private var forecastModel: [ForecastCellViewModel] = []
     private var rawForecast: Forecast? {
         didSet {
             rawForecast?.sort { object1, object2 -> Bool in
                 return (object1.day ?? "") < (object2.day ?? "")
             }
             forecast = rawForecast
+        }
+    }
+    private var forecast: Forecast? {
+        didSet {
+            forecastModel = rawForecast?.map { ForecastCellViewModel(forecast: $0, imageData: nil) } ?? []
         }
     }
 
@@ -60,21 +75,13 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = forecast?[indexPath.row]
                 guard let controller = (segue.destination as? UINavigationController)?.topViewController as? DetailViewController else {
                     return
                 }
                 controller.downloadDelegate = self
-                controller.object = object
+                controller.forecastDay = forecastModel[safeIndex: indexPath.row]?.forecast
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
-                let title: String?
-                if let day = object?.day {
-                    title = "Day \(day)"
-                } else {
-                    title = nil
-                }
-                controller.title = title
             }
         }
     }
@@ -82,37 +89,31 @@ class MasterViewController: UITableViewController {
     // MARK: - UITableViewDataSource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        forecast?.count ?? 0
+        forecastModel.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
-        let object = forecast?[indexPath.row]
-        let text: String?
-        if let day = object?.day, let description = object?.forecastDescription {
-            text = "Day \(day): \(description)"
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath)
+        let object = forecastModel[safeIndex: indexPath.row]
+        cell.textLabel?.text = object?.forecast.cellDescription
+        cell.textLabel?.textColor = object?.imageData != nil ? .gray : .black
+        if let data = object?.imageData {
+            cell.imageView?.image = UIImage(data: data)
         } else {
-            text = nil
+            cell.imageView?.image = nil
         }
-        cell.textLabel?.text = text
-        // TODO: change color for Day with previously downloaded image
-//        if let imageDownloaded = object?["image_downloaded"] as? Bool, imageDownloaded {
-//            cell.textLabel?.textColor = .gray
-//        }
         return cell
     }
 }
 
 extension MasterViewController: ImageDownloadDelegate {
-    func imageDownloadedForObject(_ object: ForecastDay?) {
-        guard let object = object else { return }
-        if let i = forecast?.firstIndex(where: { comparedObject -> Bool in
-            return comparedObject.day == object.day
-        }) {
-            // TODO: save info about Day with previously downloaded image
-            forecast?[i] = object
-            tableView.reloadData()
+    func imageDownloadedForObject(_ object: ForecastDay?, _ data: Data?) {
+        guard let forecastDay = object else { return }
+        if let indexOfModel = forecastModel.firstIndex(where: { $0.forecast == forecastDay }) {
+            if indexOfModel < forecastModel.count {
+                forecastModel[indexOfModel].imageData = data
+                tableView.reloadData()
+            }
         }
     }
 }

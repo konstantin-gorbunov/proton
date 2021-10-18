@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ImageDownloadDelegate: AnyObject {
-    func imageDownloadedForObject(_ object: ForecastDay?)
+    func imageDownloadedForObject(_ object: ForecastDay?, _ data: Data?)
 }
 
 class DetailViewController: UIViewController {
@@ -25,7 +25,7 @@ class DetailViewController: UIViewController {
     
     weak var downloadDelegate: ImageDownloadDelegate?
 
-    var object: ForecastDay? = nil {
+    var forecastDay: ForecastDay? = nil {
         didSet {
             configureView()
         }
@@ -37,7 +37,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc private func downloadImageClicked() {
-        if let stringUrl = object?.image, let forecastUrl = URL(string: stringUrl) {
+        if let stringUrl = forecastDay?.image, let forecastUrl = URL(string: stringUrl) {
             let imageDownloadSession = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
             imageDownloadSession.dataTask(with: forecastUrl, completionHandler: { [weak self] data, response, error in
                 self?.processResults(data)
@@ -52,15 +52,16 @@ class DetailViewController: UIViewController {
         } else {
             imageView?.image = nil
         }
-        downloadDelegate?.imageDownloadedForObject(object)
+        downloadDelegate?.imageDownloadedForObject(forecastDay, data)
     }
     
     private func configureView() {
-        forecastLabel?.text = object?.forecastDescription
-        sunriseLabel?.text = "\(String(describing: object?.sunrise)) seconds"
-        sunsetLabel?.text = "\(String(describing: object?.sunset)) seconds"
-        highLabel?.text = "\(String(describing: object?.high))ºC"
-        lowLabel?.text = "\(String(describing: object?.low))ºC"
-        chanceOfRainLabel?.text = "\(String(describing: object?.chanceRain))%"
+        forecastLabel?.text = forecastDay?.forecastDescription
+        sunriseLabel?.text = "\(String(describing: forecastDay?.sunrise)) seconds"
+        sunsetLabel?.text = "\(String(describing: forecastDay?.sunset)) seconds"
+        highLabel?.text = "\(String(describing: forecastDay?.high))ºC"
+        lowLabel?.text = "\(String(describing: forecastDay?.low))ºC"
+        chanceOfRainLabel?.text = "\(String(describing: forecastDay?.chanceRain))%"
+        self.title = forecastDay?.title
     }
 }

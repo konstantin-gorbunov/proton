@@ -17,12 +17,6 @@ struct ForecastDay: Codable {
     let chanceRain: Double?
     let high, low: Int?
     let image: String?
-    var title: String? {
-        if let day = day {
-            return "Day \(day)"
-        }
-        return nil
-    }
 
     enum CodingKeys: String, CodingKey {
         case day

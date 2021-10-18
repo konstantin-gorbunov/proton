@@ -62,6 +62,5 @@ class DetailViewController: UIViewController {
         highLabel?.text = "\(String(describing: forecastDay?.high))ºC"
         lowLabel?.text = "\(String(describing: forecastDay?.low))ºC"
         chanceOfRainLabel?.text = "\(String(describing: forecastDay?.chanceRain))%"
-        self.title = forecastDay?.title
     }
 }

@@ -22,14 +22,14 @@ class MasterViewController: UITableViewController {
     private var rawForecast: Forecast? {
         didSet {
             rawForecast?.sort { object1, object2 -> Bool in
-                return (object1.day ?? "") < (object2.day ?? "")
+                return (Int(object1.day ?? "0") ?? 0) < (Int(object2.day ?? "0") ?? 0)
             }
             forecast = rawForecast
         }
     }
     private var forecast: Forecast? {
         didSet {
-            forecastModel = rawForecast?.map { ForecastCellViewModel(forecast: $0, imageData: nil) } ?? []
+            forecastModel = forecast?.map { ForecastCellViewModel(forecast: $0, imageData: nil) } ?? []
         }
     }
 
@@ -77,6 +77,7 @@ class MasterViewController: UITableViewController {
                 controller.forecastDay = forecastModel[safeIndex: indexPath.row]?.forecast
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
+                controller.title = forecastModel[safeIndex: indexPath.row]?.viewControllerTitle
             }
         }
     }

@@ -17,4 +17,10 @@ struct ForecastCellViewModel {
         }
         return nil
     }
+    var viewControllerTitle: String? {
+        if let day = forecast.day {
+            return "Day \(day)"
+        }
+        return nil
+    }
 }
